@@ -1,5 +1,5 @@
 import sys
-import random
+import random#
 import pygame as pg
 
 WITDH = 1600
@@ -8,7 +8,7 @@ HEIGHT = 900
 
 class Enemy(pg.sprite.Sprite):
     """
-    道中の障害物(サカバンバスピス)に関するクラス
+    道中の障害物(おさかなさん)に関するクラス
     """
 
     def __init__(self):
@@ -18,14 +18,14 @@ class Enemy(pg.sprite.Sprite):
         self.rect.center = WITDH / 4 * 3, HEIGHT / 4
         self.vy = +50
         self.ay = +3
-        self.vx = 0
+        self.vx = 0#
 
 
     def update(self):
         """
         お魚が地面ではねるところ
         地面の座標(マージ前は750と仮定)に到達するまで等加速し、地面で速度を反転
-
+        引数screen：画面Surface
         """
         if self.rect.centery >= 750:
             self.vy = -60
@@ -47,7 +47,7 @@ def main():
     bg_image = pg.transform.rotozoom(pg.image.load("ex05/images/sky_img.png"), 0, 1.35)
 
     emys = pg.sprite.Group()
-        emys.add(Enemy())
+    emys.add(Enemy())
 
     tmr = 0
     clock = pg.time.Clock()
