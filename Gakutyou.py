@@ -7,19 +7,20 @@ class Gakutyou(pg.sprite.Sprite):
 
     def __init__(self, position: tuple[int, int], size: float) -> None:
         super().__init__()
-        gImg = pg.image.load("images/gakutyou.png")
-        cImg = pg.image.load("images/g_cloud.png")
-        self.image = pg.Surface((300, 340))
+        gImg = pg.image.load("images/gakutyou.png") # 学長画像
+        cImg = pg.image.load("images/g_cloud.png") # 学長が乗る雲画像
+        self.image = pg.Surface((300, 340)) # 学長の画像を張り付ける用のSurface
         self.image.fill(Gakutyou.BACK_COLOR)
         self.image.blit(pg.transform.rotozoom(gImg, 0, 300 / gImg.get_width() * 1.9), (-210,-70))
         self.image.blit(pg.transform.rotozoom(cImg, 0, 340 / cImg.get_width() * 1.05), (-25,65))
         self.rect = self.image.get_rect()
         self.rect.center = position
 
-        eyeLight = pg.image.load("images/eye_light.png")
-        eyeLight = pg.transform.rotozoom(eyeLight, 0, 0.035)
+        eyeLight = pg.image.load("images/eye_light.png") # 目の光をロード
+        eyeLight = pg.transform.rotozoom(eyeLight, 0, 0.035) # サイズ調整
         self.images: list[pg.surface.Surface] = []
-        for i in range(50):
+        # ここからフレームごとに切り替える学長画像のリストを作成
+        for i in range(50): # 光の画像の立ち上がり
             currentImg = self.image.copy()
             currentSurf = pg.Surface((300, 100))
             currentSurf.blit(eyeLight, (117, 40))
@@ -28,17 +29,17 @@ class Gakutyou(pg.sprite.Sprite):
             currentSurf.set_alpha(i * 5)
             currentImg.blit(currentSurf, (0, 0))
             self.images.append(currentImg)
-        for i in range(20):
+        for i in range(20): # 点灯状態を20フレーム
             self.images.append(self.images[49].copy())
-        for i in range(50)[::-1]:
+        for i in range(50)[::-1]: # 立ち下がり部分
             self.images.append(self.images[i].copy())
         self.images = [pg.transform.rotozoom(x, 0, size) for x in self.images]
-        for i in self.images:
+        for i in self.images: # 一気に背景透過
             i.set_colorkey(Gakutyou.BACK_COLOR)
-        self.image = self.images[0]
-        self.timer = 0
-        self.attackTimer = -1
-        self.isReady = False
+        self.image = self.images[0] # 最初の画像は0番目で固定
+        self.timer = 0 # Updateごとに1増やすタイマーを設定
+        self.attackTimer = -1 # 攻撃時間を設定（攻撃時以外は-1）
+        self.isReady = False # 攻撃中かどうか
 
     def update(self):
         """
@@ -46,14 +47,15 @@ class Gakutyou(pg.sprite.Sprite):
         毎フレーム呼び出してください
         """
         if self.timer >= Gakutyou.COOL_TIME or self.isReady:
-            self.timer = 0
+            # 学長の攻撃が始まる時間になったらタイマーをリセット
+            self.timer = 0 
             self.isReady = True
             self.image = self.images[50]
         else:
             self.timer += 1
-            self.image = self.images[int(self.timer * ((self.timer // 120 + 1) ** 2)) % 120]
+            self.image = self.images[int(self.timer * ((self.timer // 120 + 1) ** 2)) % 120] # タイマーに応じて画像を変更
             if int(self.timer * ((self.timer // 120 + 1) ** 2)) % 120 <= 10:
-                pg.mixer.init()
+                pg.mixer.init() # 目が光る効果音を再生
                 pg.mixer.music.load("sounds/pika.mp3")
                 pg.mixer.music.play(1)
         
@@ -64,15 +66,12 @@ class Gakutyou(pg.sprite.Sprite):
         戻り値：True(攻撃できるとき) or False(攻撃できないとき)
         """
         if self.attackTimer >= 0:
-            self.attackTimer -= 1
+            self.attackTimer -= 1 # attackTimerが設定されている間は1ずつ減算
             if self.attackTimer < 0:
-                self.isReady = False
+                self.isReady = False # タイマーが0未満になったら攻撃を終了
             return True
         elif self.isReady:
-            self.attackTimer = 100
+            self.attackTimer = 100 # 攻撃の時間を100に設定
             return True
         else:
             return False
-    
-    def finished_attack(self):
-        self.isReady = False
