@@ -1,6 +1,10 @@
 import pygame as pg
 
 class Gakutyou(pg.sprite.Sprite):
+    """
+    学長のクラス（スプライト継承済み）
+    コンストラクタでは位置と大きさ（倍率）を指定して作成
+    """
 
     BACK_COLOR = (120, 250, 120)
     COOL_TIME = 480
