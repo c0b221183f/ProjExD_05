@@ -19,3 +19,4 @@
 ### ToDo
 
 ### メモ
+* OtoLogicの音源を使用（CC BY 4.0）
