@@ -25,7 +25,7 @@ class Wall:
         遮蔽物(木)を描画
         引数: screen: 画面Surface
         """
-        self.tree = pg.transform.rotozoom(pg.image.load("ex05/images/tree.png"), 0, 0.5)  # 木の画像を読み込む
+        self.tree = pg.transform.rotozoom(pg.image.load("images/tree.png"), 0, 0.5)  # 木の画像を読み込む
         screen.blit(self.tree, [WITDH, HEIGHT - 569])  # 木を表示
         self.rect = self.tree.get_rect()  # 木のrectを作成
         self.rect.bottom = HEIGHT - TREE_BOTTOM  # 木のY座標を固定
@@ -56,7 +56,7 @@ class Start_menu:
         """
         フォント、メニュータイトルの表示
         """
-        self.font = pg.font.Font("ex05/fonts/onryou.TTF", 100)
+        self.font = pg.font.Font("fonts/onryou.TTF", 100)
         self.menu_title = self.font.render("学長から見つかるな！", True, (255, 255, 255))
         
     def button(self, screen: pg.Surface, num:int):
@@ -89,7 +89,7 @@ class Enemy(pg.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.image = pg.transform.rotozoom(pg.image.load("ex05/images/ojama.png"), 0, 0.5)   # 障害物の画像読み込み
+        self.image = pg.transform.rotozoom(pg.image.load("images/ojama.png"), 0, 0.5)   # 障害物の画像読み込み
         self.rect = self.image.get_rect()
         self.rect.center = WITDH / 4 * 3, HEIGHT / 4
         self.vy = +50
@@ -118,7 +118,7 @@ def main():
     pg.display.set_caption("学長が転んだ")
     screen = pg.display.set_mode((WITDH, HEIGHT))
 
-    bg_image = pg.transform.rotozoom(pg.image.load("ex05/images/sky_img.png"), 0, 1.35)
+    bg_image = pg.transform.rotozoom(pg.image.load("images/sky_img.png"), 0, 1.35)
 
     gakutyou = Gakutyou((1000, 200), 1) # 学長インスタンスを作成
     character = ch.Character([200, 700])
@@ -164,7 +164,7 @@ def main():
   
         # キャラクターと障害物の衝突判定
         for emy in emys:
-            if  character.rect.collidedict(emy.rect):
+            if  character.rect.colliderect(emy.rect):
                 character
             else:
                 character = 10

@@ -14,7 +14,7 @@ class Character(pg.sprite.Sprite):
         引数 xy：キャラクターの初期位置
         """
         super().__init__()
-        self.image = pg.transform.flip(pg.transform.rotozoom(pg.image.load("ex05/images/character.png"), 0, 0.5), True, False)
+        self.image = pg.transform.flip(pg.transform.rotozoom(pg.image.load("images/character.png"), 0, 0.5), True, False)
         self.rect = self.image.get_rect()
         self.rect.center = xy
         self.dx = 10
@@ -41,7 +41,7 @@ class Character(pg.sprite.Sprite):
         障害物に当たった時に画像を切り替える
         引数 screen：画面Surface
         """
-        self.image = pg.transform.flip(pg.image.load("ex05/images/character2.png"), True, False)
+        self.image = pg.transform.flip(pg.image.load("images/character2.png"), True, False)
         screen.blit(self.image, self.rect)
 
  
