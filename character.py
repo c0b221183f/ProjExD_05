@@ -14,12 +14,12 @@ class Character(pg.sprite.Sprite):
         引数 xy：キャラクターの初期位置
         """
         super().__init__()
-        self.image = pg.transform.flip(pg.transform.rotozoom(pg.image.load("images/character.png"), 0, 0.5), True, False)
+        self.image = pg.transform.flip(pg.transform.rotozoom(pg.image.load("images/character1.png"), 0, 0.5), True, False)
         self.rect = self.image.get_rect()
         self.rect.center = xy
         self.dx = 10
 
-    def calc_mv(self, key_lst: list[bool]):
+    def calc_mv(self, key_lst: list[bool], bg: pg.sprite.Sprite):
         """
         押下キーに応じてキャラクターの移動量を返す関数
         引数１ key_lst：押下キーの真理値リスト
@@ -34,14 +34,17 @@ class Character(pg.sprite.Sprite):
             mv = self.dx
         elif key_lst[pg.K_RIGHT]:
             mv = -self.dx
+        if bg.rect.x >= 0 and mv > 0:
+            mv = 0
         return mv
 
-    def update(self, screen: pg.Surface):
+    def update(self, num: int, screen: pg.Surface):
         """
         障害物に当たった時に画像を切り替える
-        引数 screen：画面Surface
+        引数１ num：画像の番号
+        引数２ screen：画面Surface
         """
-        self.image = pg.transform.flip(pg.image.load("images/character2.png"), True, False)
+        self.image = pg.transform.flip(pg.transform.rotozoom(pg.image.load(f"images/character{num}.png"), 0, 0.5), True, False)
         screen.blit(self.image, self.rect)
 
  

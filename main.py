@@ -1,7 +1,8 @@
 import sys
-import random#
+import random
 import pygame as pg
 import random
+import time
 
 import character as ch
 from background import background
@@ -13,10 +14,10 @@ WITDH = 1600
 HEIGHT = 900
 STAGE_WIDTH = 10000  # ステージの横幅
 TREE_BOTTOM = 100
-WALL_NUM = 10  # 木の数
-trees = list()  # 木のリスト
+WALL_NUM = 15  # 木の数
+trees = pg.sprite.Group() # 木のリスト
 
-class Wall:
+class Wall(pg.sprite.Sprite):
     """
     遮蔽物(以下、木)の描画、判定処理
     """
@@ -25,13 +26,14 @@ class Wall:
         遮蔽物(木)を描画
         引数: screen: 画面Surface
         """
-        self.tree = pg.transform.rotozoom(pg.image.load("images/tree.png"), 0, 0.5)  # 木の画像を読み込む
-        screen.blit(self.tree, [WITDH, HEIGHT - 569])  # 木を表示
-        self.rect = self.tree.get_rect()  # 木のrectを作成
-        self.rect.bottom = HEIGHT - TREE_BOTTOM  # 木のY座標を固定
+        super().__init__()
+        self.image = pg.transform.rotozoom(pg.image.load("images/tree.png"), 0, 0.5)  # 木の画像を読み込む
+        screen.blit(self.image, [WITDH, HEIGHT - 350])  # 木を表示
+        self.rect = self.image.get_rect()  # 木のrectを作成
+        self.rect.bottom = HEIGHT - TREE_BOTTOM + 53  # 木のY座標を固定
         self.rect.centerx = random.randint(500, STAGE_WIDTH)  # 木のX座標を決定。500～ステージのサイズの間にランダムで生成
     
-    def update(self, key_lst: list[bool], screen: pg.Surface):
+    def update(self, key_lst: list[bool], screen: pg.Surface, mv):
         """
         ユーザの操作に応じで木の描画位置を変更
         引数1 key_lst: 押下キーの真理値リスト
@@ -43,8 +45,8 @@ class Wall:
         if key_lst[pg.K_RIGHT]:  # もし、右矢印を押していたら...
             self.speedx = 10 * (-1)  # 左に20動く
 
-        self.rect.centerx += self.speedx  # 木の位置を更新
-        screen.blit(self.tree, self.rect)  # 更新後の木を描画
+        self.rect.centerx += mv  # 木の位置を更新
+        screen.blit(self.image, self.rect)  # 更新後の木を描画
 
 
 
@@ -67,7 +69,7 @@ class Start_menu:
         """
         if num == 0:
             self.start_button = self.font.render("スタート", True, (255, 0, 0))
-            self.hoge_button = self.font.render("セッテイ",True, (255, 255, 255))
+            self.hoge_button = self.font.render("ヤメル",True, (255, 255, 255))
             screen.fill((0, 0, 0))
             screen.blit(self.menu_title, (WITDH/2 - self.menu_title.get_width()/2, HEIGHT/2 - self.menu_title.get_height()))
             screen.blit(self.start_button, (WITDH/3 - self.start_button.get_width()/2, HEIGHT/2 + self.start_button.get_height()))
@@ -75,7 +77,7 @@ class Start_menu:
         
         if num == 1:
             self.start_button = self.font.render("スタート", True, (255, 255, 255))
-            self.hoge_button = self.font.render("セッテイ",True, (255, 0, 0))
+            self.hoge_button = self.font.render("ヤメル",True, (255, 0, 0))
             screen.fill((0, 0, 0))
             screen.blit(self.menu_title, (WITDH/2 - self.menu_title.get_width()/2, HEIGHT/2 - self.menu_title.get_height()))
             screen.blit(self.start_button, (WITDH/3 - self.start_button.get_width()/2, HEIGHT/2 + self.start_button.get_height()))
@@ -89,67 +91,80 @@ class Enemy(pg.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.image = pg.transform.rotozoom(pg.image.load("images/ojama.png"), 0, 0.5)   # 障害物の画像読み込み
+        self.image = pg.transform.rotozoom(pg.image.load("images/ojama.png"), 0, 0.3)   # 障害物の画像読み込み
         self.rect = self.image.get_rect()
-        self.rect.center = WITDH / 4 * 3, HEIGHT / 4
-        self.vy = +50
-        self.ay = +3
-        self.vx = 0#
+        self.rect.center = WITDH + 100, HEIGHT / 4
+        self.vy = +40
+        self.ay = +1
+        self.vx = -8
 
 
-    def update(self):
+    def update(self, mv_value):
         """
         お魚が地面ではねるところ
         地面の座標(マージ前は750と仮定)に到達するまで等加速し、地面で速度を反転
         引数screen：画面Surface
         """
         if self.rect.centery >= 750:
-            self.vy = -60
-            self.vx = random.randint(-5, 5) * 5#
+            self.vy = -40
         self.vy += self.ay
         #self.rect.centerx = Character.calc_mv()   スクロールに合わせたx座標の移動(マージ後に調整)
-        if (self.rect.left < 0) or (self.rect.right > WITDH):#
-            self.vx *= -1#
-        self.rect.centerx += self.vx#
+        self.rect.centerx += self.vx + mv_value
         self.rect.centery += self.vy
+        if self.rect.right <= 0:
+            self.kill()
         
 
 def main():
     pg.display.set_caption("学長が転んだ")
     screen = pg.display.set_mode((WITDH, HEIGHT))
-
-    bg_image = pg.transform.rotozoom(pg.image.load("images/sky_img.png"), 0, 1.35)
-
-    gakutyou = Gakutyou((1000, 200), 1) # 学長インスタンスを作成
-    character = ch.Character([200, 700])
-    bg = background()
+    # ここからメニュー画面
     start_menu = Start_menu()
-
     game_state = "menu_start"
     start_menu.button(screen, 0)
+    while game_state != "runnnig":
+        pg.display.update()
+        key_lst = pg.key.get_pressed()
+        for event in pg.event.get():
+             
+            if (event.type == pg.KEYDOWN and event.key == pg.K_RIGHT):#右キーを押下で設定画面に移れる状態にする
+                start_menu.button(screen, 1)
+                game_state = "menu_end"
+            if(event.type == pg.KEYDOWN and event.key == pg.K_LEFT):#左キーを押下でゲーム画面に移れる状態にする
+                start_menu.button(screen, 0)
+                game_state = "menu_start"
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE and game_state == "menu_start":
+                game_state = "runnnig"
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE and game_state == "menu_end":    
+                return
+        
 
+
+
+    # ここからゲームスタート
+    bg_image = pg.transform.rotozoom(pg.image.load("images/sky_img.png"), 0, 1.0)
+
+    gakutyou = Gakutyou((1000, 200), 1) # 学長インスタンスを作成
+    character = ch.Character([200, 720])
+    bg = background()
     emys = pg.sprite.Group()
-    emys.add(Enemy())
 
 
     tmr = 0
     clock = pg.time.Clock()
     for i in range(WALL_NUM):  # WALL_NUMの分だけ繰り返す
-        trees.append(Wall(screen))  # 木の情報を追加
+        trees.add(Wall(screen))  # 木の情報を追加
 
     while True:
+        if len(emys) == 0:
+            emys.add(Enemy())
         key_lst = pg.key.get_pressed()
         for event in pg.event.get():
             if event.type == pg.QUIT: return
-            if (event.type == pg.KEYDOWN and event.key == pg.K_RIGHT):#右キーを押下で設定画面に移れる状態にする
-                start_menu.button(screen, 1)
-                game_state = "menu_settei"
-            if(event.type == pg.KEYDOWN and event.key == pg.K_LEFT):#左キーを押下でゲーム画面に移れる状態にする
-                start_menu.button(screen, 0)
-                game_state = "menu_start"
-
             
-        bg.update(1)
+
+        mv = character.calc_mv(key_lst, bg)
+        bg.update(-mv)
         screen.blit(bg.image,bg.rect)
 
         gakutyou.update() # 学長インスタンスの更新
@@ -158,41 +173,51 @@ def main():
             shadeSurface.fill((0, 0, 0))
             shadeSurface.set_alpha(100)
             screen.blit(shadeSurface, (0, 0))
+            # 隠れられているか判定
+            if len(pg.sprite.spritecollide(character, trees, False)) == 0:
+                game_state = "game_over"
         screen.blit(gakutyou.image, gakutyou.rect) # 学長インスタンスを描画
-        screen.blit(character.image, character.rect)
+        trees.update(key_lst, screen, mv)  # 木の位置を更新する
         key_lst = pg.key.get_pressed()
-  
+
+
+        # クリア
+        if bg.rect.x <= -6800:
+            character.update(3, screen)            
+            pg.display.update()
+            time.sleep(2)
+            return
+
+        screen.blit(character.image, character.rect) # キャラクター描画
         # キャラクターと障害物の衝突判定
-        for emy in emys:
-            if  character.rect.colliderect(emy.rect):
-                character
-            else:
-                character = 10
-            character.update(screen)
+        if len(pg.sprite.spritecollide(character, emys, True)) != 0:
+            character.update(2, screen)
+            pg.display.update()
+            time.sleep(2)
+            return
+        else:
+            character.update(1, screen)
         
-        character.calc_mv(key_lst)
-        emys.update()
+        emys.update(mv)
         emys.draw(screen)
-                    
-        keys = pg.key.get_pressed()
-        if (keys[pg.K_SPACE] and game_state == "menu_start"): #スペースキーを押下でゲーム開始
-            game_state = "game"
 
-        if (keys[pg.K_SPACE] and game_state == "menu_settei"):#スペースキーを押下で設定画面に遷移できる状態であることをターミナルに表示
-            print("settei")
-       
-        if game_state == "game":
-            screen.blit(bg_image, [0, 0])
+        # ゲームオーバー判定
+        if game_state == "game_over":
+            fonto = pg.font.Font("fonts/onryou.TTF", 200)
+            txt = fonto.render("退学", True, (255, 0, 0))
+            txt_rect = txt.get_rect()
+            txt_rect.center = (WITDH / 2, HEIGHT / 2)
+            screen.blit(txt, txt_rect)
+            pg.display.update()
+            time.sleep(2)
+            return
 
         
-        screen.blit(bg_image, [0, 0])
 
-        for tree in trees:  # 木を1つ1つ取得
-            tree.update(key_lst, screen)  # 木の位置を更新する
+        
         pg.display.update()
         tmr += 1
         clock.tick(50)
-        print(tmr)
 
 if __name__ == "__main__":
     pg.init()

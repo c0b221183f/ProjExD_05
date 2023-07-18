@@ -7,7 +7,7 @@ class Gakutyou(pg.sprite.Sprite):
     """
 
     BACK_COLOR = (120, 250, 120)
-    COOL_TIME = 480
+    COOL_TIME = 360
 
     def __init__(self, position: tuple[int, int], size: float) -> None:
         super().__init__()
