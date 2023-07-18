@@ -53,18 +53,18 @@ def main():
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: return
-            if (event.type == pg.KEYDOWN and event.key == pg.K_RIGHT):
+            if (event.type == pg.KEYDOWN and event.key == pg.K_RIGHT):#右キーを押下で設定画面に移れる状態にする
                 start_menu.button(screen, 1)
                 game_state = "menu_settei"
-            if(event.type == pg.KEYDOWN and event.key == pg.K_LEFT):
+            if(event.type == pg.KEYDOWN and event.key == pg.K_LEFT):#左キーを押下でゲーム画面に移れる状態にする
                 start_menu.button(screen, 0)
                 game_state = "menu_start"
 
         keys = pg.key.get_pressed()
-        if (keys[pg.K_SPACE] and game_state == "menu_start"):
+        if (keys[pg.K_SPACE] and game_state == "menu_start"): #スペースキーを押下でゲーム開始
             game_state = "game"
 
-        if (keys[pg.K_SPACE] and game_state == "menu_settei"):
+        if (keys[pg.K_SPACE] and game_state == "menu_settei"):#スペースキーを押下で設定画面に遷移できる状態であることをターミナルに表示
             print("settei")
        
         if game_state == "game":
