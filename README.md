@@ -15,9 +15,9 @@
 * 学長クラス
 * 遮蔽物クラス
 * メニュークラス C0B22002 赤堀一琉　担当
-ゲームを始める前にメニュー画面を表示させる
-スタートと設定画面が表示されているが、文字が赤くなったときにスペースキーを押すと次の画面に勧める。
-参考サイトURL：https://ja.thefilibusterblog.com/how-to-create-a-start-menu-and-game-over-screen-with-pygame/
+    * ゲームを始める前にメニュー画面を表示させる
+    * スタートと設定画面が表示されているが、文字が赤くなったときにスペースキーを押すと次の画面に勧める。
+    * 参考サイトURL：https://ja.thefilibusterblog.com/how-to-create-a-start-menu-and-game-over-screen-with-pygame/
 * 残機クラス
 
 ### ToDo
