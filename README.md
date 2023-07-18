@@ -15,11 +15,14 @@
 * 障害物クラス：マップ内に障害物を表示させるクラス(enemy)
 * 学長クラス：学長に関するクラス(gakucho) （担当：丹嶋悠介）
 * 遮蔽物クラス：学長の目から逃れるための遮蔽物に関するクラス(wall)
-* メニュークラス：スタートメニューに関するクラス(menu)
+* メニュークラス：スタートメニューに関するクラス(menu)　(担当：C0B22002 赤堀一琉)
+    * ゲームを始める前にメニュー画面を表示させる
+    * スタートと設定画面が表示されているが、文字が赤くなったときにスペースキーを押すと次の画面に勧める。
+    * 参考サイトURL：https://ja.thefilibusterblog.com/how-to-create-a-start-menu-and-game-over-screen-with-pygame/
 * 背景クラス：背景と地面に関するクラス(background)
-
 ### ToDo
 * Characterクラスに追加機能実装
 
 ### メモ
 * OtoLogicの音源を使用（CC BY 4.0）
+* onryou フォント使用
